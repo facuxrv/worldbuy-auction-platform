@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+
+<!-- Override page title -->
+{% block title %}Create Listing{% endblock %}
+
+{% block body %}
+
+    <!-- Page title -->
+    <h2 class="header-title">Create a New Listing</h2>
+
+    <!-- Listing creation form -->
+    <form class="form" action="{% url 'create_listing' %}" method="post">
+        {% csrf_token %}
+        
+        <!-- Title input field -->
+        <div class="form-group">
+            <label class="form-label" for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        
+        <!-- Description text area -->
+        <div class="form-group">
+            <label class="form-label" for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" required></textarea>
+        </div>
+        
+        <!-- Starting bid input field -->
+        <div class="form-group">
+            <label class="form-label" for="starting_bid">Starting Bid</label>
+            <input type="number" class="form-control" id="starting_bid" name="starting_bid" step="0.01" required>
+        </div>
+        
+        <!-- Image URL input field (optional) -->
+        <div class="form-group">
+            <label class="form-label" for="image_url">Image URL</label>
+            <input type="url" class="form-control" id="image_url" name="image_url">
+        </div>
+        
+        <!-- Category input field (optional) -->
+        <div class="form-group">
+            <label class="form-label" for="category">Category</label>
+            <input type="text" class="form-control" id="category" name="category">
+        </div>
+        
+        <!-- Submit button to create the listing -->
+        <button type="submit" class="btn btn-primary">Create Listing</button>
+    </form>
+{% endblock %}
+

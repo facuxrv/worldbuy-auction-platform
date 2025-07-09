@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="header-activelistings">
+        <h1 class="header-title">{{ category_name }}</h1>
+    </div>
+    <div class="itemcontainer">
+        {% if listings %}
+            <ul class="list-group">
+                {% for listing in listings %}
+                <li class="list-group-item">
+                        <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="listing-image">
+                        <div class="textoslist">
+                            <a href="{% url 'listing' listing.id %}">{{ listing.title|truncatewords:5 }}</a>
+                            <p>Current Bid: {{ listing.current_bid }}</p>
+                        </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-listings">No listings found in this category.</p>
+        {% endif %}
+    </div>
+{% endblock %}

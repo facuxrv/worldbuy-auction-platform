@@ -1,0 +1,89 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <!-- Page header with listing title -->
+    <div class="header-activelistings">
+        <h1 class="header-title">{{ listing.title }}</h1>
+    </div>
+    
+    <!-- Main container for listing details -->
+    <div class="itemcontainer-listing">
+        <!-- Product image section -->
+        <div class="product-image">
+            <img class="bidimage" src="{{ listing.image_url }}" alt="{{ listing.title }}" class="listing-image">
+        </div>
+        
+        <!-- Product details and actions section -->
+        <div class="product-details">
+            <!-- Listing information -->
+            <h2>{{ listing.title }}</h2>
+            <p>Description: {{ listing.description|truncatewords:30 }}</p>
+            <p>Starting Bid: {{ listing.starting_bid }}</p>
+            <p>Current Bid: {{ listing.current_bid }}</p>
+            <p>Category: {{ listing.category }}</p>
+            <p>Owner: {{ listing.owner.username }}</p>
+            <p>Status: {% if listing.auction_active %}Active{% else %}Closed, auction won by {{ listing.current_bid.user.username }}{% endif %}</p>
+            
+            <!-- Actions section for bidding/watchlist (non-owner users only) -->
+            <div class="product-actions">
+                {% if user.is_authenticated and user.id != listing.owner.id %}
+                    {% if listing.auction_active %}
+                        <!-- Active auction: Allow bidding and adding to watchlist -->
+                        <form class="product-actions" method="POST">
+                            {% csrf_token %}
+                            <input type="number" class="form-control" placeholder="Your Bid" min="{{ listing.starting_bid }}" step="0.01" name="bid_amount">
+                            <div class="buttons-wbid" style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn btn-primary">Place Bid</button>
+                                <button class="btn btn-danger" value="true" name="add_to_watchlist">Add to Watchlist</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <!-- Closed auction: Show status -->
+                        <div class="buttons-wbid" style="display: flex; gap: 10px;">
+                                <button type="submit" class="closedbid">Closed Bid</button>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                
+                <!-- Owner actions: Delete listing or close auction -->
+                {% if user.is_authenticated and user.id == listing.owner.id %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" value="true" name="delete_listing">Delete Listing</button>
+                    <button class="btn btn-danger" value="false" name="close_listing">Close Auction</button>
+                </form>
+                {% endif %}
+            </div>
+            
+            <!-- Comment submission form (authenticated users only) -->
+            <div class="comments-making">
+                {% if user.is_authenticated %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <textarea class="form-control" type="text" placeholder="Add a comment..." name="commenttext"></textarea>
+                    <button type="submit" class="btn btn-secondary mt-2">Submit</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        
+    <!-- Comments display section -->
+    <div class="comments-section">
+        {% if user.is_authenticated %}
+                <h3 class="comment">Comments</h3>
+                <!-- Loop through all comments for this listing -->
+                {% for comment in listing.comments.all %}
+                    <div class="comment">
+                        <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+                    </div>
+                <!-- Show message if no comments exist -->
+                {% empty %}
+                    <p>No comments yet.</p>
+                {% endfor %}
+        <!-- Message for non-authenticated users -->
+        {% else %}
+            <p class="comment">Please register or login to view comments.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

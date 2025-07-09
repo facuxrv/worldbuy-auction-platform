@@ -1,0 +1,37 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <!-- Page header section -->
+    <div class="header-activelistings">
+        <h1 class="header-title">Your Watchlist</h1>
+    </div>
+    
+    <!-- Main content container for watchlist items -->
+    <div class="itemcontainer">
+        <!-- Check if user has any items in watchlist -->
+        {% if WatchList %}
+            <!-- Grid layout for displaying watchlist items -->
+            <ul class="list-group">
+                <!-- Loop through each watchlist item -->
+                {% for listing in WatchList %}
+                <li class="list-group-item">
+                        <!-- Listing image -->
+                        <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="listing-image">
+                        
+                        <!-- Listing details section -->
+                        <div class="textoslist">
+                            <!-- Listing title (truncated to 5 words) with link to detail page -->
+                            <a href="{% url 'listing' listing.id %}">{{ listing.title|truncatewords:5 }}</a>
+                            
+                            <!-- Current bid information -->
+                            <p>Current Bid: {{ listing.current_bid }}</p>
+                        </div>
+                </li>
+                {% endfor %}
+            </ul>
+        <!-- Display message when watchlist is empty -->
+        {% else %}
+            <p class="no-listings">No listings in your watchlist.</p>
+        {% endif %}
+    </div>
+{% endblock %}

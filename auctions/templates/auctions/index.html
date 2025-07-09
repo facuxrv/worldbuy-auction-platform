@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <!-- Page header section -->
+    <div class="header-activelistings">
+        <h1 class="header-title">Active Listings</h1>
+    </div>
+    
+    <!-- Main content container for listings display -->
+    <div class="itemcontainer">
+        <!-- Check if there are any auction listings to display -->
+        {% if AuctionListings %}
+            <!-- Grid layout for displaying auction listings -->
+            <ul class="list-group">
+                <!-- Loop through each auction listing -->
+                {% for listing in AuctionListings %}
+                <li class="list-group-item">
+                        <!-- Listing image -->
+                        <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="listing-image">
+                        
+                        <!-- Listing details section -->
+                        <div class="textoslist">
+                            <!-- Listing title (truncated to 5 words) with link to detail page -->
+                            <a href="{% url 'listing' listing.id %}">{{ listing.title|truncatewords:5 }}</a>
+                            
+                            <!-- Listing description (truncated to 10 words) -->
+                            <p>{{ listing.description|truncatewords:10 }}</p>
+                            
+                            <!-- Starting bid price -->
+                            <p>Starting Bid: ${{ listing.starting_bid }}</p>
+                        </div>
+                </li>
+                {% endfor %}
+            </ul>
+        <!-- Display message when no listings are available -->
+        {% else %}
+            <p class="no-listings">No active listings available. Be the first one to publish!</p>
+        {% endif %}
+    </div>
+{% endblock %}

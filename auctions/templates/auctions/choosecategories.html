@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="header-activelistings">
+        <h1 class="header-title">Categories</h1>
+    </div>
+    <div class="itemcontainer">
+        {% if categories %}
+            <ul class="list-group">
+                {% for category in categories %}
+                <li class="list-group-item">
+                        <div class="textoslist">
+                            <a href="{% url 'category' category %}"> {{ category }}</a>
+                        </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-listings">No categories found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
