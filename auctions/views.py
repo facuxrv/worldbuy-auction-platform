@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -32,9 +33,8 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
-            })
+            messages.error(request, "Invalid username and/or password.")
+            return render(request, "auctions/login.html")
     else:
         return render(request, "auctions/login.html")
 
@@ -53,18 +53,16 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
-            })
+            messages.error(request, "Passwords must match.")
+            return render(request, "auctions/register.html")
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "auctions/register.html", {
-                "message": "Username already taken."
-            })
+            messages.error(request, "Username already taken.")
+            return render(request, "auctions/register.html")
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -93,6 +91,7 @@ def create_listing(request):
             owner=owner,
             starting_bid=starting_bid
         )
+        messages.success(request, f"Your auction listing '{title}' has been created successfully!")
         return HttpResponseRedirect(reverse("index"))
     # If the request method is GET, we render the create listing form
     else:
@@ -123,13 +122,20 @@ def listing(request, listing_id):
 
         # Handle listing deletion
         if request.POST.get("delete_listing"):
+            listing_title = listing.title
             listing.delete()
+            messages.success(request, f"Listing '{listing_title}' has been deleted successfully.")
             return HttpResponseRedirect(reverse("index"))
         
         # Handle bidding
         elif request.POST.get("bid_amount"):
             bid_amount = request.POST.get("bid_amount")
-            if bid_amount is not None and float(bid_amount) > listing.starting_bid:
+            # Determine the minimum bid required
+            minimum_bid = listing.starting_bid
+            if listing.current_bid is not None:
+                minimum_bid = listing.current_bid.amount
+            
+            if bid_amount is not None and float(bid_amount) > minimum_bid:
                 new_bid = Bid.objects.create(
                     user=request.user,
                     listing=listing,
@@ -137,19 +143,20 @@ def listing(request, listing_id):
                 )
                 listing.current_bid = new_bid
                 listing.save()
+                messages.success(request, f"Your bid of ${bid_amount} has been placed successfully!")
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
             else:
+                messages.error(request, f"Bid must be greater than ${minimum_bid}.")
                 return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "message": "Bid amount must be greater than the current bid."
+                    "listing": listing
                 })
             
         # Handle comments
         elif request.POST.get("commenttext"):
             if not request.user.is_authenticated:
+                messages.error(request, "You must be logged in to comment.")
                 return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "message": "You must be logged in to comment."
+                    "listing": listing
                 })
             comment_content = request.POST.get("commenttext")
             if comment_content is not None:
@@ -158,11 +165,12 @@ def listing(request, listing_id):
                     listing=listing,
                     content=comment_content
                 )
+                messages.success(request, "Your comment has been added successfully!")
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
             elif comment_content == "":
+                messages.warning(request, "Comment cannot be empty.")
                 return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "message": "Comment cannot be empty."
+                    "listing": listing
                 })
             
         # Handle closing the auction
@@ -171,11 +179,12 @@ def listing(request, listing_id):
             if listing.current_bid and listing.current_bid.user != request.user:
                 listing.auction_active = False
                 listing.save()
+                messages.success(request, f"Auction for '{listing.title}' has been closed successfully.")
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
             else:
+                messages.error(request, "You cannot close this auction.")
                 return render(request, "auctions/listing.html", {
-                    "listing": listing,
-                    "message": "You cannot close this auction."
+                    "listing": listing
                 })
             
         # Handle adding to watchlist
@@ -185,11 +194,12 @@ def listing(request, listing_id):
                 user=request.user,
                 listing=listing
             )
+            messages.success(request, f"'{listing.title}' has been added to your watchlist!")
             return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
         else:
+            messages.warning(request, "Something went wrong. Please try again.")
             return render(request, "auctions/listing.html", {
-                "listing": listing,
-                "message": "Something went wrong."
+                "listing": listing
             })
 
 # Handle the watchlist view, showing the user's watchlist

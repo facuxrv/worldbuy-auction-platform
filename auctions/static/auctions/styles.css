@@ -345,3 +345,46 @@ a.nav-link:hover {
     color: white;
     overflow: hidden;
 }
+
+/* Alert/Message styling */
+.alert {
+    margin: 20px auto;
+    max-width: 1500px;
+    border-radius: 8px;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+    color: #856404;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert .close {
+    color: inherit;
+    opacity: 0.7;
+}
+
+.alert .close:hover {
+    opacity: 1;
+}

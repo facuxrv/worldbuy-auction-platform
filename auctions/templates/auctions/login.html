@@ -5,11 +5,6 @@
     <!-- Page title -->
     <h2 class="header-title">Login</h2>
 
-    <!-- Display error messages if any -->
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
     <!-- Login form -->
     <form class="form" action="{% url 'login' %}" method="post">
         {% csrf_token %}

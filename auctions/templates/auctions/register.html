@@ -5,11 +5,6 @@
     <!-- Page title -->
     <h2 class="header-title">Register</h2>
 
-    <!-- Display error messages if any -->
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
     <!-- Registration form -->
     <form class="form" action="{% url 'register' %}" method="post">
         {% csrf_token %}
