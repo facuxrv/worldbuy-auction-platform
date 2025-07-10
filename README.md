@@ -15,7 +15,7 @@ A modern, full-featured auction platform built with Django, inspired by eBay. Us
 ## 🛠 Tech Stack
 
 - **Backend**: Django 5.2.3
-- **Database**: SQLite (development)
+- **Database**: SQL
 - **Frontend**: HTML5, CSS3, Bootstrap 4
 - **Authentication**: Django's built-in authentication system
 
