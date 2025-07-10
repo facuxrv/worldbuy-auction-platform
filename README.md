@@ -61,12 +61,6 @@ All demo listings include realistic descriptions, starting bids, and high-qualit
    cd worldbuy-auction-platform
    ```
 
-2. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  
-   ```
-
 3. **Install dependencies**
    ```bash
    pip install django
@@ -83,15 +77,17 @@ All demo listings include realistic descriptions, starting bids, and high-qualit
    python manage.py createsuperuser
    ```
 
-6. **Start the development server**
+6. **Set up demo data**
+   ```bash
+   python setup_demo_data.py
+   ```
+
+
+7. **Start the development server**
    ```bash
    python manage.py runserver
    ```
 
-7. **Set up demo data (optional)**
-   ```bash
-   python setup_demo_data.py
-   ```
 
 8. **Open your browser** and navigate to `http://127.0.0.1:8000`
 
